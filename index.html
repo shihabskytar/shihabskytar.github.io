@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKYTAR // WOLF KING // Root Cat — Terminal</title>
+<meta name="description" content="SKYTAR // WOLF KING // Root Cat — Omar Faruk Shihab. Cyber intelligence terminal.">
+<style>
+  :root{--green:#00ff9c;--red:#ff3030;--bg:#050505;--panel:#0a0f0d;--muted:#7d9188}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--green);font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:hidden}
+  #matrix{position:fixed;inset:0;z-index:0;opacity:.22;pointer-events:none}
+  #flash{position:fixed;inset:0;background:var(--red);opacity:0;pointer-events:none;z-index:50}
+  body.panic #flash{animation:flash .6s ease}
+  body.panic .term{animation:shake .5s ease}
+  @keyframes flash{0%{opacity:.7}100%{opacity:0}}
+  @keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(4px,2px)}}
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:28px 18px 60px}
+  header{text-align:center}
+  h1{font-size:clamp(2rem,7vw,3.6rem);letter-spacing:.12em;margin:8px 0 4px;text-shadow:0 0 18px #00ff9c66}
+  .sub{color:var(--red);letter-spacing:.18em;font-weight:700}
+  .tag{color:var(--muted)}
+  .badges{margin:16px 0;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .badges a{color:var(--green);border:1px solid var(--green);padding:6px 12px;border-radius:999px;text-decoration:none;font-size:.85rem}
+  .badges a.red{color:var(--red);border-color:var(--red)}
+  .cat{margin:22px auto;width:210px;text-align:center}
+  .eyes{display:flex;gap:36px;justify-content:center;margin:10px 0}
+  .eye{width:52px;height:52px;border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;background:#000}
+  .pupil{width:18px;height:18px;background:var(--green);border-radius:50%;box-shadow:0 0 12px var(--green)}
+  .cat pre{margin:0;color:var(--green);font-size:13px;line-height:1.3}
+  .term{border:1px solid #12382b;background:var(--panel);border-radius:12px;overflow:hidden;box-shadow:0 0 40px #00ff9c22}
+  .term-head{background:#0d1712;padding:10px 14px;color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between}
+  #out{padding:18px;min-height:340px;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+  #out a{color:#7dfcd0}
+  .dim{color:var(--muted)} .red{color:var(--red)} .white{color:#fff}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}
+  .chips button{background:#0d1712;color:var(--green);border:1px solid #12382b;border-radius:999px;padding:7px 13px;cursor:pointer;font:inherit}
+  .chips button:hover{border-color:var(--green)}
+  .inputrow{display:flex;gap:8px;padding:14px 18px;border-top:1px solid #12382b}
+  .prompt{white-space:nowrap}
+  #cmd{flex:1;background:transparent;border:none;outline:none;color:#fff;font:inherit}
+  .hint{color:var(--muted);font-size:.85rem;padding:0 18px 16px}
+  .cards{margin-top:26px;display:grid;gap:14px}
+  .card{border:1px solid #12382b;background:#070b09;border-radius:12px;padding:16px}
+  .card h2{margin:0 0 8px;font-size:1.05rem}
+  @media(prefers-reduced-motion:reduce){#matrix{display:none}}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div id="flash"></div>
+<div class="wrap">
+  <header>
+    <div class="sub">CYBER INTELLIGENCE</div>
+    <h1>SKYTAR</h1>
+    <p><strong>WOLF KING</strong> / <strong>Root Cat</strong></p>
+    <p class="tag">Omar Faruk Shihab · Dhaka, Bangladesh<br>Silent in the dark. Relentless in the pursuit of knowledge.</p>
+    <div class="badges">
+      <a href="https://github.com/shihabskytar">GitHub: shihabskytar</a>
+      <a class="red" href="https://www.shihabskytar.com">shihabskytar.com</a>
+      <a href="https://www.linkedin.com/in/shihabskytar">LinkedIn</a>
+      <a href="https://x.com/shihabskytar">X</a>
+    </div>
+  </header>
+
+  <div class="cat" id="catBox" aria-label="Root Cat watching">
+    <div class="eyes"><div class="eye"><div class="pupil"></div></div><div class="eye"><div class="pupil"></div></div></div>
+    <pre> /\_/\  
+( o.o )  ROOT CAT IS WATCHING
+ &gt; ^ &lt;</pre>
+    <p class="dim" style="font-size:.85rem">Move your mouse — the eyes follow.</p>
+  </div>
+
+  <div class="term" id="term">
+    <div class="term-head"><span>root@skytar: ~</span><span>SYSTEM ONLINE</span></div>
+    <div id="out"></div>
+    <div class="chips" id="chips"></div>
+    <div class="inputrow"><span class="prompt">root@skytar:~#</span><input id="cmd" autocomplete="off" spellcheck="false" placeholder="type help, then Enter" autofocus></div>
+    <p class="hint">Try: help · whoami · skills · ops · links · wolf · cat · decrypt · clear</p>
+  </div>
+
+  <div class="cards">
+    <div class="card"><h2>About SKYTAR</h2><p class="dim">Cybersecurity &amp; AI research from Dhaka, Bangladesh.<br>Reverse engineering, defensive security, malware analysis, forensics, and AI-assisted research — plus full-stack software engineering. THINK DEEP. BUILD HARD. STAY PRECISE.</p></div>
+    <div class="card"><h2>Live GitHub activity</h2><p><img src="https://github-readme-stats.vercel.app/api?username=shihabskytar&show_icons=true&theme=dark&title_color=00FF9C&icon_color=00FF9C&text_color=ffffff&bg_color=050505" alt="GitHub stats" style="max-width:100%"></p><p><img src="https://github-readme-stats.vercel.app/api/top-langs/?username=shihabskytar&layout=compact&theme=dark&title_color=00FF9C&text_color=ffffff&bg_color=050505" alt="Top languages" style="max-width:100%"></p></div>
+    <div class="card"><h2>Contribution snake</h2><p class="dim">The snake eats your real contribution grid. It appears after the first snake workflow run in your profile repo (see SNAKE-README.md).</p><p><img src="https://raw.githubusercontent.com/shihabskytar/shihabskytar/output/github-contribution-grid-snake-dark.svg" alt="GitHub contribution snake for shihabskytar" style="max-width:100%"></p></div>
+  </div>
+  <p class="dim" style="text-align:center">© SKYTAR · THINK DEEP. BUILD HARD. STAY PRECISE.</p>
+</div>
+
+<script>
+const out=document.getElementById('out');
+const input=document.getElementById('cmd');
+function print(t,cls){const d=document.createElement('div');if(cls)d.className=cls;d.textContent=t;out.appendChild(d);window.scrollTo(0,document.body.scrollHeight);}
+function printHTML(h){const d=document.createElement('div');d.innerHTML=h;out.appendChild(d);}
+const BOOT=["[+] SYSTEM INITIALIZED","[+] IDENTITY LOADED: SKYTAR // WOLF KING // ROOT CAT","[+] KNOWLEDGE ENGINE ONLINE","[+] ANALYSIS IN PROGRESS","", "Welcome, operator. Type help or tap a command below.","Silent in the dark. Relentless in the pursuit of knowledge."];
+let bi=0;(function boot(){if(bi<BOOT.length){print(BOOT[bi]);bi++;setTimeout(boot,220);}else{input.focus();}})();
+const COMMANDS={
+help:`whoami    identity file\nskills    operator skill matrix\nops       active operations\nlinks     establish connection\nwolf      look into its eyes\ncat       root cat\ndecrypt   decode the transmission\nclear     wipe the screen`,
+whoami:`[IDENTITY]\nALIAS       = SKYTAR\nCODENAME    = WOLF KING\nMASCOT      = ROOT CAT\nNAME        = Omar Faruk Shihab\nORIGIN      = Dhaka, Bangladesh\nCLASS       = Cybersecurity & AI Research\nRULE        = THINK DEEP. BUILD HARD. STAY PRECISE.\n\n"Silent in the dark. Relentless in the pursuit of knowledge."`,
+skills:`OPERATOR SKILL MATRIX\nJavaScript       ████████████████████  BUILDING\nPython           ████████████████████  DEVELOPMENT\nWeb Engineering  █████████████████░░░  DEVELOPMENT\nMachine Learning ████████████████░░░░  RESEARCH\nCybersecurity    ███████████████░░░░░  RESEARCH\nC / C++          ███████████░░░░░░░░░  LEARNING\nC# / Java        ██████████░░░░░░░░░░  LEARNING`,
+ops:`ACTIVE OPERATIONS\n[001] CYBERSECURITY  vuln research, defensive security, malware analysis, forensics\n[002] REVERSE ENG.   binary structure, assembly, control-flow reconstruction\n[003] AI & NEURAL    ML, deep learning, automation, local AI integration\n[004] SOFTWARE ENG.  full-stack, desktop apps, developer tooling`,
+wolf:`      ▄▀▄       ▄▀▄\n     ▐▓▓▓▀▄▄▄▄▄▀▓▓▓▌\n      ▀█  ◉   ◉  █▀\n       █   ▼▼   █\n        ▀▄▄▄▄▄▀\n\nIT HAS BEEN WATCHING YOU SINCE YOU ARRIVED.`,
+cat:` /\\_/\\  \n( o.o )  ROOT CAT\n > ^ <\n\nRoot access granted. The cat saw you first.`
+};
+function panic(){document.body.classList.add('panic');setTimeout(()=>document.body.classList.remove('panic'),650);}
+function scramble(target){
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&";
+  let frame=0;const el=document.createElement('div');out.appendChild(el);
+  const iv=setInterval(()=>{let s="";for(let i=0;i<target.length;i++){s+= i<frame?target[i]:chars[Math.floor(Math.random()*chars.length)];}el.textContent=s;frame+=2;if(frame>=target.length){el.textContent=target;clearInterval(iv);}},40);
+}
+function run(raw){
+  const cmd=raw.trim().toLowerCase();
+  print("root@skytar:~# "+raw,"white");
+  if(!cmd) return;
+  if(cmd==="clear"){out.innerHTML="";return;}
+  if(cmd==="links"){printHTML('GitHub: <a href="https://github.com/shihabskytar">github.com/shihabskytar</a><br>Website: <a href="https://www.shihabskytar.com">shihabskytar.com</a><br>LinkedIn: <a href="https://www.linkedin.com/in/shihabskytar">linkedin.com/in/shihabskytar</a><br>X: <a href="https://x.com/shihabskytar">x.com/shihabskytar</a><br>Facebook: <a href="https://www.facebook.com/shihabskytar">facebook.com/shihabskytar</a><br>YouTube: <a href="https://www.youtube.com/c/ShihabSkytar">youtube.com/c/ShihabSkytar</a>');return;}
+  if(cmd==="decrypt"){scramble("THE CODE ALWAYS LEAVES A TRACE.");return;}
+  if(cmd==="wolf"){print(COMMANDS.wolf);panic();return;}
+  if(cmd==="exit"){print("SESSION CLOSED. — but this page stays open. Type help to continue.","dim");return;}
+  if(COMMANDS[cmd]){print(COMMANDS[cmd]);return;}
+  print("command not found: "+cmd+" — type help","red");
+}
+const chips=document.getElementById('chips');
+["help","whoami","skills","ops","links","wolf","cat","decrypt","clear"].forEach(c=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>{run(c);input.focus();};chips.appendChild(b);});
+input.addEventListener('keydown',e=>{if(e.key==="Enter"){run(input.value);input.value="";}});
+document.getElementById('term').addEventListener('click',()=>input.focus());
+// Whispers
+const whispers=["…it has been watching you since you arrived.","…the code always leaves a trace.","…stay sharp. stay curious."];
+setInterval(()=>{print(whispers[Math.floor(Math.random()*whispers.length)],"dim");},30000);
+// Mouse-following eyes (Root Cat)
+const pupils=document.querySelectorAll('.pupil');
+document.addEventListener('mousemove',e=>{
+  const cx=window.innerWidth/2, cy=180;
+  const dx=(e.clientX-cx)/window.innerWidth, dy=(e.clientY-cy)/window.innerHeight;
+  pupils.forEach(p=>{p.style.transform=`translate(${dx*14}px, ${dy*10}px)`;});
+});
+// Matrix rain
+const cv=document.getElementById('matrix'),ctx=cv.getContext('2d');
+function size(){cv.width=innerWidth;cv.height=innerHeight;} size(); addEventListener('resize',size);
+const colsChar="01アイタカサシスセソ0123456789ABCDEF";let drops=[];
+function initDrops(){drops=Array(Math.floor(innerWidth/16)).fill(0);} initDrops();
+setInterval(()=>{ctx.fillStyle="rgba(0,0,0,0.08)";ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle="#00ff9c";ctx.font="14px monospace";drops.forEach((y,i)=>{const ch=colsChar[Math.floor(Math.random()*colsChar.length)];ctx.fillText(ch,i*16,y*16);if(y*16>cv.height&&Math.random()>0.975)drops[i]=0;drops[i]++;});},50);
+</script>
+</body>
+</html>
